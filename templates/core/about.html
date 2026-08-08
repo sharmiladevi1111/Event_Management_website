@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="gradient-section" style="padding-top:50px;">
+  <div class="container-narrow" style="max-width:900px;">
+    <h1 class="section-title">About Us</h1>
+    <p class="section-lead">Learn more about our company and our commitment to creating unforgettable events.</p>
+
+    <h3>Our Story</h3>
+    <p>{{ site_settings.about_story }}</p>
+
+    <h3 style="margin-top:26px;">Our Mission &amp; Vision</h3>
+    <p>{{ site_settings.about_mission }}</p>
+
+    <h3 style="margin-top:26px;">Years of Experience</h3>
+    <div class="stat-box">
+      <div class="stat-label">Years of Experience</div>
+      <div class="stat-value">{{ site_settings.years_of_experience }}</div>
+    </div>
+
+    <h3 style="margin-top:30px;">Our Team</h3>
+    <p>{{ site_settings.about_team_intro }}</p>
+
+    <div class="team-grid">
+      {% for member in team_members %}
+      <div>
+        <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="team-avatar">
+        <div class="team-name">{{ member.name }}</div>
+        <div class="team-role">{{ member.role }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h3>Why Choose Us?</h3>
+    <div class="card-grid">
+      {% for item in why_choose_us_about %}
+      <div class="tick-card">
+        <span class="tick">{% include "core/_icon.html" with icon="check" %}</span>
+        <h4>{{ item.title }}</h4>
+        <p>{{ item.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="text-align:center; margin-top:36px;">
+      <a href="{% url 'core:book_event' %}" class="btn-primary-gradient">Book Event</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

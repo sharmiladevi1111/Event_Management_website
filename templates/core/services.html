@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="gradient-section" style="padding-top:50px;">
+  <div class="container-narrow" style="max-width:900px;">
+    <h1 class="section-title">Our Services</h1>
+    <p class="section-lead">We offer a comprehensive suite of event management services tailored to meet your specific needs. From intimate gatherings to large-scale productions, our experienced team ensures every detail is executed flawlessly.</p>
+
+    {% for service in services %}
+    <div class="service-row">
+      <h3>{{ service.title }}</h3>
+      <p>{{ service.description }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="hero" style="background-image: url('{% if site_settings.hero_image %}{{ site_settings.hero_image.url }}{% else %}{% static 'images/hero-fallback.jpg' %}{% endif %}');">
+  <div class="hero-content">
+    <h1>{{ site_settings.hero_title }}</h1>
+    <p>{{ site_settings.hero_subtitle }}</p>
+    <div class="hero-actions">
+      <a href="{% url 'core:event_list' %}" class="btn-primary-gradient">View Events</a>
+      <a href="{% url 'core:book_event' %}" class="btn-secondary-gradient">Book Your Event</a>
+    </div>
+  </div>
+</section>
+
+<section class="gradient-section">
+  <div class="container-narrow">
+    <h2 class="section-title">Our Features</h2>
+    <h3 class="section-subtitle">Comprehensive Event Solutions</h3>
+    <p class="section-lead">From initial concept to final execution, we handle every detail to ensure your event is a success.</p>
+
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px,1fr));">
+      {% for feature in features %}
+      <div class="feature-card">
+        <div class="card-icon">
+          {% include "core/_icon.html" with icon=feature.icon %}
+        </div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="section-title" style="margin-top:60px;">Why Choose Us</h2>
+    <h3 class="section-subtitle">Trusted Event Professionals</h3>
+    <p class="section-lead">We are committed to delivering exceptional events with a focus on quality, reliability, and client satisfaction.</p>
+
+    <div class="card-grid">
+      {% for item in why_choose_us %}
+      <div class="why-card">
+        <div class="card-icon">
+          {% include "core/_icon.html" with icon=item.icon %}
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="section-title" style="margin-top:60px;">Events Preview</h2>
+    <div class="events-grid">
+      {% for event in featured_events %}
+      <div class="event-card">
+        <a href="{{ event.get_absolute_url }}"><img src="{{ event.image.url }}" alt="{{ event.title }}"></a>
+        <div class="event-card-body">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.short_description }}</p>
+          <a href="{{ event.get_absolute_url }}" class="btn-view-details">View Details</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="section-title" style="margin-top:60px;">Testimonials</h2>
+    <div style="max-width:800px;">
+      {% for t in testimonials %}
+      <div class="testimonial-card">
+        <div class="testimonial-head">
+          {% if t.avatar %}
+          <img src="{{ t.avatar.url }}" class="testimonial-avatar" alt="{{ t.name }}">
+          {% endif %}
+          <div>
+            <div class="testimonial-name">{{ t.name }}</div>
+            <div class="testimonial-date">{{ t.date|date:"F j, Y" }}</div>
+          </div>
+        </div>
+        <div class="stars">{% for s in t.stars %}&#9733;{% endfor %}</div>
+        <p>&quot;{{ t.message }}&quot;</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="cta-block">
+      <h2>Ready to Plan Your Next Event?</h2>
+      <p>Let us help you create an unforgettable experience. Contact us today to get started.</p>
+      <a href="{% url 'core:book_event' %}" class="btn-primary-gradient">Book Your Event</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

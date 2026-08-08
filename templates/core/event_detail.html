@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} | {{ site_settings.company_name }}{% endblock %}
+{% block content %}
+<section class="gradient-section" style="padding-top:50px;">
+  <div class="container-narrow" style="max-width:900px;">
+
+    <img src="{{ event.image.url }}" alt="{{ event.title }}" class="detail-hero-img">
+
+    <h1 class="section-title">{{ event.title }}</h1>
+    <p class="section-lead" style="margin-bottom:0;">{{ event.short_description }}</p>
+
+    <div class="detail-actions">
+      <a href="tel:{{ event.phone_number }}" class="btn-secondary-gradient">
+        {% include "core/_icon.html" with icon="phone" %} Call Now
+      </a>
+      <a href="{% url 'core:book_event' %}?event={{ event.slug }}" class="btn-primary-gradient">Enquiry Form</a>
+    </div>
+
+    <p>{{ event.description }}</p>
+
+    <h3 style="margin-top:30px;">Services Included</h3>
+    <ul class="services-list">
+      {% for service in event.services_list %}
+      <li><span class="dot"></span> {{ service }}</li>
+      {% endfor %}
+    </ul>
+
+    <h3 style="margin-top:30px;">Event Highlights</h3>
+    <div class="highlight-grid">
+      <div class="highlight-card">{% include "core/_icon.html" with icon="users" %} {{ event.highlight_attendees }}</div>
+      <div class="highlight-card">{% include "core/_icon.html" with icon="megaphone" %} {{ event.highlight_speakers }}</div>
+      <div class="highlight-card">{% include "core/_icon.html" with icon="calendar" %} {{ event.highlight_duration }}</div>
+      <div class="highlight-card">{% include "core/_icon.html" with icon="pin" %} {{ event.highlight_venue }}</div>
+    </div>
+
+    <h3>Sample Pricing</h3>
+    <p>{{ event.pricing_note }}</p>
+
+    <a href="{% url 'core:book_event' %}?event={{ event.slug }}" class="btn-primary-gradient">Book This Event</a>
+
+  </div>
+</section>
+{% endblock %}

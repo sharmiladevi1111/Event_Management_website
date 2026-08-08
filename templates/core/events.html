@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="gradient-section" style="padding-top:50px;">
+  <div class="container-narrow">
+    <h1 class="section-title">Events</h1>
+
+    <form method="get" id="filterForm">
+      <div class="filters-bar">
+
+        <div class="filter-dropdown">
+          <button type="button" class="filter-toggle">Event Type &#9662;</button>
+          <div class="filter-menu">
+            <a href="?{% if selected.budget_range %}budget_range={{ selected.budget_range }}&{% endif %}{% if selected.location %}location={{ selected.location }}&{% endif %}{% if selected.venue %}venue={{ selected.venue }}{% endif %}" class="{% if not selected.event_type %}active{% endif %}">All Types</a>
+            {% for value, label in event_type_choices %}
+            <a href="?event_type={{ value }}{% if selected.budget_range %}&budget_range={{ selected.budget_range }}{% endif %}{% if selected.location %}&location={{ selected.location }}{% endif %}{% if selected.venue %}&venue={{ selected.venue }}{% endif %}" class="{% if selected.event_type == value %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="filter-dropdown">
+          <button type="button" class="filter-toggle">Budget Range &#9662;</button>
+          <div class="filter-menu">
+            <a href="?{% if selected.event_type %}event_type={{ selected.event_type }}&{% endif %}{% if selected.location %}location={{ selected.location }}&{% endif %}{% if selected.venue %}venue={{ selected.venue }}{% endif %}" class="{% if not selected.budget_range %}active{% endif %}">All Budgets</a>
+            {% for value, label in budget_range_choices %}
+            <a href="?budget_range={{ value }}{% if selected.event_type %}&event_type={{ selected.event_type }}{% endif %}{% if selected.location %}&location={{ selected.location }}{% endif %}{% if selected.venue %}&venue={{ selected.venue }}{% endif %}" class="{% if selected.budget_range == value %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="filter-dropdown">
+          <button type="button" class="filter-toggle">Location &#9662;</button>
+          <div class="filter-menu">
+            <a href="?{% if selected.event_type %}event_type={{ selected.event_type }}&{% endif %}{% if selected.budget_range %}budget_range={{ selected.budget_range }}&{% endif %}{% if selected.venue %}venue={{ selected.venue }}{% endif %}" class="{% if not selected.location %}active{% endif %}">All Locations</a>
+            {% for value, label in location_choices %}
+            <a href="?location={{ value }}{% if selected.event_type %}&event_type={{ selected.event_type }}{% endif %}{% if selected.budget_range %}&budget_range={{ selected.budget_range }}{% endif %}{% if selected.venue %}&venue={{ selected.venue }}{% endif %}" class="{% if selected.location == value %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="filter-dropdown">
+          <button type="button" class="filter-toggle">venue &#9662;</button>
+          <div class="filter-menu">
+            <a href="?{% if selected.event_type %}event_type={{ selected.event_type }}&{% endif %}{% if selected.budget_range %}budget_range={{ selected.budget_range }}&{% endif %}{% if selected.location %}location={{ selected.location }}{% endif %}" class="{% if not selected.venue %}active{% endif %}">All Venues</a>
+            {% for value, label in venue_choices %}
+            <a href="?venue={{ value }}{% if selected.event_type %}&event_type={{ selected.event_type }}{% endif %}{% if selected.budget_range %}&budget_range={{ selected.budget_range }}{% endif %}{% if selected.location %}&location={{ selected.location }}{% endif %}" class="{% if selected.venue == value %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if selected.event_type or selected.budget_range or selected.location or selected.venue %}
+        <a href="{% url 'core:event_list' %}" class="btn-secondary-gradient">Clear Filters</a>
+        {% endif %}
+      </div>
+    </form>
+
+    <div class="events-grid">
+      {% for event in events %}
+      <div class="event-card">
+        <a href="{{ event.get_absolute_url }}"><img src="{{ event.image.url }}" alt="{{ event.title }}"></a>
+        <div class="event-card-body">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.short_description }}</p>
+          <a href="{{ event.get_absolute_url }}" class="btn-view-details">View Details</a>
+        </div>
+      </div>
+      {% empty %}
+      <p>No events match those filters yet. Try clearing a filter or check back soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
