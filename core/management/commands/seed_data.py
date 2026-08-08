@@ -20,9 +20,13 @@ SEED_DIR = os.path.join(settings.BASE_DIR, "seed_images")
 
 
 def attach_image(field, path):
+    """Attach an image file to a FileField/ImageField, overwriting cleanly."""
+    filename = os.path.basename(path)
+    target_name = f"{field.field.upload_to}{filename}"
+    if field.storage.exists(target_name):
+        field.storage.delete(target_name)
     with open(path, "rb") as f:
-        field.save(os.path.basename(path), File(f), save=False)
-
+        field.save(filename, File(f), save=False)
 
 class Command(BaseCommand):
     help = "Populate the database with sample data matching the Make Events prototype."
@@ -66,7 +70,8 @@ class Command(BaseCommand):
             "execution and creative excellence."
         )
         if not s.hero_image:
-            attach_image(s.hero_image, os.path.join(SEED_DIR, "hero.jpg"))
+            attach_image(event.image, os.path.join(SEED_DIR, "events", image_name))
+            event.save()
         s.about_story = (
             "Founded in 2010, MASTER PROMOTE began as a small team of passionate event "
             "planners with a vision to transform ordinary gatherings into extraordinary "
@@ -396,7 +401,7 @@ class Command(BaseCommand):
             )
             if created or not t.avatar:
                 attach_image(t.avatar, os.path.join(SEED_DIR, "testimonials", image))
-                t.save()
+            t.save()
         self.stdout.write("Testimonials ready.")
 
     def seed_services(self):
@@ -453,7 +458,7 @@ class Command(BaseCommand):
             )
             if created or not member.photo:
                 attach_image(member.photo, os.path.join(SEED_DIR, "team", image))
-                member.save()
+            member.save()
         self.stdout.write("Team ready.")
 
     def seed_about_why_choose_us(self):
