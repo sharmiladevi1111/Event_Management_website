@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+# Render build script
+set -o errexit
+
+pip install -r requirements.txt
+
+python manage.py collectstatic --no-input
+python manage.py migrate
+
+# Seed sample content on first deploy (safe to re-run, uses update_or_create)
+python manage.py seed_data
+
 # Create/update the admin user so it always matches the DJANGO_SUPERUSER_*
 # env vars. Running this on every deploy means the password can never drift
 # out of sync with what's shown in the Render dashboard's Environment tab.

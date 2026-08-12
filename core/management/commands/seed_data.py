@@ -20,13 +20,20 @@ SEED_DIR = os.path.join(settings.BASE_DIR, "seed_images")
 
 
 def attach_image(field, path):
-    """Attach an image file to a FileField/ImageField, overwriting cleanly."""
+    """Attach an image file to a FileField/ImageField, overwriting cleanly.
+
+    Deletes any existing file at the target storage location first so
+    re-running this (e.g. `manage.py seed_data` more than once against the
+    same disk) replaces the file in place instead of Django appending a
+    random suffix to avoid a name collision.
+    """
     filename = os.path.basename(path)
     target_name = f"{field.field.upload_to}{filename}"
     if field.storage.exists(target_name):
         field.storage.delete(target_name)
     with open(path, "rb") as f:
         field.save(filename, File(f), save=False)
+
 
 class Command(BaseCommand):
     help = "Populate the database with sample data matching the Make Events prototype."
@@ -69,9 +76,7 @@ class Command(BaseCommand):
             "We plan, design, and manage unforgettable events with professional "
             "execution and creative excellence."
         )
-        if not s.hero_image:
-            attach_image(event.image, os.path.join(SEED_DIR, "events", image_name))
-            event.save()
+        attach_image(s.hero_image, os.path.join(SEED_DIR, "hero.jpg"))
         s.about_story = (
             "Founded in 2010, MASTER PROMOTE began as a small team of passionate event "
             "planners with a vision to transform ordinary gatherings into extraordinary "
@@ -360,9 +365,13 @@ class Command(BaseCommand):
             event, created = Event.objects.update_or_create(
                 title=data["title"], defaults={**data, "order": i}
             )
-            if created or not event.image:
-                attach_image(event.image, os.path.join(SEED_DIR, "events", image_name))
-                event.save()
+            # Always re-write the image file. Render's disk is wiped on every
+            # deploy, but the database (Postgres) persists — so even though
+            # `event.image` already has a filename on record, the actual file
+            # may no longer exist on this container. Re-attaching is cheap and
+            # keeps things in sync on every deploy.
+            attach_image(event.image, os.path.join(SEED_DIR, "events", image_name))
+            event.save()
         self.stdout.write("Events ready.")
 
     def seed_testimonials(self):
@@ -399,8 +408,7 @@ class Command(BaseCommand):
             t, created = Testimonial.objects.update_or_create(
                 name=name, defaults={"date": date, "rating": rating, "message": message, "order": i}
             )
-            if created or not t.avatar:
-                attach_image(t.avatar, os.path.join(SEED_DIR, "testimonials", image))
+            attach_image(t.avatar, os.path.join(SEED_DIR, "testimonials", image))
             t.save()
         self.stdout.write("Testimonials ready.")
 
@@ -456,8 +464,7 @@ class Command(BaseCommand):
             member, created = TeamMember.objects.update_or_create(
                 name=name, defaults={"role": role, "order": i}
             )
-            if created or not member.photo:
-                attach_image(member.photo, os.path.join(SEED_DIR, "team", image))
+            attach_image(member.photo, os.path.join(SEED_DIR, "team", image))
             member.save()
         self.stdout.write("Team ready.")
 
